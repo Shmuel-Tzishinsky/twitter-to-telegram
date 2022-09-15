@@ -1,0 +1,20 @@
+{
+  "name": "twitter-to-telegram-bot",
+  "version": "1.0.0",
+  "description": "This bots forwards tweets from Twitter accounts to Telegram chats",
+  "main": "telegram.js",
+  "scripts": {
+    "start": "npde run telegram.js",
+    "nodemon": "nodemon telegram.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "better-sqlite3": "^7.4.3",
+    "dotenv": "^10.0.0",
+    "knex": "^2.3.0",
+    "node-fetch": "^2.6.1",
+    "node-telegram-bot-api": "^0.54.0",
+    "sqlite3": "^5.1.1"
+  }
+}
