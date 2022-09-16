@@ -1,5 +1,5 @@
 const path = require("path");
-require("dotenv").config({ path: path.join(__dirname, "./.env") });
+require("dotenv").config({ path: path.join(__dirname, "../.env") });
 // const Database = require("better-sqlite3");
 const twitter = require("./twitter");
 const TelegramBot = require("node-telegram-bot-api");
