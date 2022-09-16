@@ -3,7 +3,7 @@ require("dotenv").config({ path: path.join(__dirname, "./.env") });
 // const Database = require("better-sqlite3");
 const twitter = require("./twitter");
 const TelegramBot = require("node-telegram-bot-api");
-const { createSubscription, getAllSubscription, searchSubscription } = require("./db/subscriptions");
+const { createSubscription, getAllSubscription, searchSubscription, updateSubscription } = require("./db/subscriptions");
 
 // const db = new Database("subscriptions.db", {}); // verbose: console.log
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
@@ -21,8 +21,7 @@ bot.onText(/\/start/, async (msg, match) => {
 // Cron;
 setInterval(async () => {
   console.log("> Checking subscriptions...");
-  const subscriptions = await getAllSubscription({ telegram_chat: 653787377 });
-  console.log("🚀 ~ file: telegram.js ~ line 25 ~ setInterval ~ subscriptions", subscriptions);
+  const subscriptions = await getAllSubscription({ telegram_chat: process.env.TELEGRAM_ADMINS });
   for (const subscription of subscriptions) {
     // Get tweets by account since the last check
     const tweets = await twitter.getTweets(subscription.twitter_account, subscription.last_check);
@@ -50,16 +49,16 @@ setInterval(async () => {
       // If the tweet does contain a link, show preview. Else, do not show it since it will load the message text from the tweet url
       // Note that we are checking tweet.text, not text. This is because we insert mentions in the text that are no useful urls
       if (tweet.text.includes("http")) {
-        bot.sendMessage(subscription.telegram_chat, text, { parse_mode: "html" });
+        await bot.sendMessage(subscription.telegram_chat, text, { parse_mode: "html" });
       } else {
-        bot.sendMessage(subscription.telegram_chat, text, { parse_mode: "html", disable_web_page_preview: true });
+        await bot.sendMessage(subscription.telegram_chat, text, { parse_mode: "html", disable_web_page_preview: true });
       }
     }
     // Update subscription last check time
+    await updateSubscription(subscription.twitter_account, subscription.telegram_chat, new Date().toISOString(), subscription.subscription_id);
     // db.prepare("UPDATE subscriptions SET last_check = ? WHERE subscription_id = ?").run(new Date().toISOString(), subscription.subscription_id);
   }
 }, 10 * 60 * 10000); // Checks every 10 minutes
-
 // <<< Admin functions >>>
 // Inert subscribe
 bot.onText(/\/subscribe @(\w+)/, async (msg, match) => {
