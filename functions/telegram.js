@@ -59,6 +59,7 @@ setInterval(async () => {
     // db.prepare("UPDATE subscriptions SET last_check = ? WHERE subscription_id = ?").run(new Date().toISOString(), subscription.subscription_id);
   }
 }, 10 * 60 * 10000); // Checks every 10 minutes
+
 // <<< Admin functions >>>
 // Inert subscribe
 bot.onText(/\/subscribe @(\w+)/, async (msg, match) => {

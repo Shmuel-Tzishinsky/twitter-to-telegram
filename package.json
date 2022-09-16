@@ -2,10 +2,12 @@
   "name": "twitter-to-telegram-bot",
   "version": "1.0.0",
   "description": "This bots forwards tweets from Twitter accounts to Telegram chats",
-  "main": "telegram.js",
+  "main": "functions/telegram.js",
   "scripts": {
-    "start": "npde run telegram.js",
-    "nodemon": "nodemon telegram.js"
+    "postinstall": "netlify-lambda install",
+    "buildNetlify": "netlify-lambda build functions",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "devNetlify": "netlify-lambda serve functions"
   },
   "author": "",
   "license": "ISC",
