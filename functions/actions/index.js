@@ -93,20 +93,22 @@ const userIsAdmin = async (userId) => {
 
 const userSendMsg = async (msg) => {
   console.log("🚀 ~ file: index.js ~ line 95 ~ userSendMsg ~ msg", msg);
-  const text = msg?.text || msg?.message?.text || msg?.message?.caption;
+  const { message } = JSON.parse(ctx + "");
+
+  const text = message?.text || message?.caption;
 
   switch (text) {
     case text.match(/\/start/)?.input:
-      return await start(msg);
+      return await start(message);
     case text.match(/\/subscriptions/)?.input:
-      return await subscriptions(msg);
+      return await subscriptions(message);
     case text.match(/\/subscribe @(\w+)/)?.input:
-      return await subscribe(msg, text.replace("/subscribe @", ""));
+      return await subscribe(message, text.replace("/subscribe @", ""));
     case text.match(/\/unsubscribe @(\w+)/)?.input:
-      return await unsubscribe(msg, text.replace("/unsubscribe @", ""));
+      return await unsubscribe(message, text.replace("/unsubscribe @", ""));
 
     default:
-      return await sendMessage(msg.chat.id, "I don't find command", "HTML");
+      return await sendMessage(message.chat.id, "I don't find command", "HTML");
   }
 };
 module.exports = {

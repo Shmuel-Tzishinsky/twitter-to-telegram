@@ -49,7 +49,7 @@ setInterval(async () => {
 
 exports.handler = async (event) => {
   try {
-    await userSendMsg(JSON.parse(event.body + ""));
+    await userSendMsg(event.body);
     return { statusCode: 200, body: "" };
   } catch (e) {
     console.log(e);
