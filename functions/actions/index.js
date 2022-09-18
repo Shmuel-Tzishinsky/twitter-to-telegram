@@ -92,26 +92,23 @@ const userIsAdmin = async (userId) => {
 };
 
 const userSendMsg = async (msg) => {
-  console.log("🚀 ~ file: index.js ~ line 95 ~ userSendMsg ~ msg", msg);
   const { message } = JSON.parse(msg + "");
-  console.log("🚀 ~ file: index.js ~ line 97 ~ userSendMsg ~ message", message);
 
   const text = message?.text || message?.caption;
-  console.log("🚀 ~ file: index.js ~ line 100 ~ userSendMsg ~ text", text);
 
-  // switch (text) {
-  //   case text.match(/\/start/)?.input:
-  //     return await start(message);
-  //   case text.match(/\/subscriptions/)?.input:
-  //     return await subscriptions(message);
-  //   case text.match(/\/subscribe @(\w+)/)?.input:
-  //     return await subscribe(message, text.replace("/subscribe @", ""));
-  //   case text.match(/\/unsubscribe @(\w+)/)?.input:
-  //     return await unsubscribe(message, text.replace("/unsubscribe @", ""));
+  switch (text) {
+    case text.match(/\/start/)?.input:
+      return await start(message);
+    case text.match(/\/subscriptions/)?.input:
+      return await subscriptions(message);
+    case text.match(/\/subscribe @(\w+)/)?.input:
+      return await subscribe(message, text.replace("/subscribe @", ""));
+    case text.match(/\/unsubscribe @(\w+)/)?.input:
+      return await unsubscribe(message, text.replace("/unsubscribe @", ""));
 
-  //   default:
-  //     return await sendMessage(message.chat.id, "I don't find command", "HTML");
-  // }
+    default:
+      return await sendMessage(message.chat.id, "I don't find command", "HTML");
+  }
 };
 module.exports = {
   userSendMsg,
