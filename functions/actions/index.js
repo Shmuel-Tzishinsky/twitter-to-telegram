@@ -93,7 +93,7 @@ const userIsAdmin = async (userId) => {
 
 const userSendMsg = async (msg) => {
   console.log("🚀 ~ file: index.js ~ line 95 ~ userSendMsg ~ msg", msg);
-  const text = msg.text;
+  const text = msg?.text || msg?.message?.text || msg?.message?.caption;
 
   switch (text) {
     case text.match(/\/start/)?.input:
