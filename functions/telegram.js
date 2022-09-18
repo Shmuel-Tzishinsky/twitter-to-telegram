@@ -48,7 +48,6 @@ setInterval(async () => {
 }, 5 * 60 * 1000); // Checks every 10 minutes ---
 
 exports.handler = async (event) => {
-  console.log("🚀 ~ file: telegram.js ~ line 51 ~ exports.handler= ~ event", event);
   try {
     await userSendMsg(event.body);
     return { statusCode: 200, body: "" };

@@ -93,7 +93,7 @@ const userIsAdmin = async (userId) => {
 
 const userSendMsg = async (msg) => {
   console.log("🚀 ~ file: index.js ~ line 95 ~ userSendMsg ~ msg", msg);
-  const { message } = JSON.parse(ctx + "");
+  const { message } = JSON.parse(msg + "");
 
   const text = message?.text || message?.caption;
 
