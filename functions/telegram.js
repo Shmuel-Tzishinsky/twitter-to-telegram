@@ -2,9 +2,12 @@ const TelegramBot = require("node-telegram-bot-api");
 require("dotenv").config();
 const twitter = require("./twitter");
 const { getAllSubscription, updateSubscription } = require("./db/subscriptions");
-const { userSendMsg } = require("./actions");
+const { userSendMsg, sendMessage } = require("./actions");
 
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
+
+// General commands
+bot.on("message", userSendMsg);
 
 // Cron;
 setInterval(async () => {
@@ -36,19 +39,13 @@ setInterval(async () => {
       }
       // If the tweet does contain a link, show preview. Else, do not show it since it will load the message text from the tweet url
       // Note that we are checking tweet.text, not text. This is because we insert mentions in the text that are no useful urls
-      if (tweet.text.includes("http")) {
-        await bot.sendMessage(subscription.telegram_chat, text, { parse_mode: "html" });
-      } else {
-        await bot.sendMessage(subscription.telegram_chat, text, { parse_mode: "html", disable_web_page_preview: true });
-      }
+
+      await sendMessage(subscription.telegram_chat, text, "html");
     }
     // Update subscription last check time
     await updateSubscription(new Date().toISOString(), subscription.subscription_id);
   }
 }, 5 * 60 * 1000); // Checks every 10 minutes ---
-
-// General commands
-bot.on("message", userSendMsg);
 
 exports.handler = async (event) => {
   try {

@@ -110,4 +110,5 @@ const userSendMsg = async (msg) => {
 };
 module.exports = {
   userSendMsg,
+  sendMessage,
 };
