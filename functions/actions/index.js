@@ -92,6 +92,7 @@ const userIsAdmin = async (userId) => {
 };
 
 const userSendMsg = async (msg) => {
+  console.log("🚀 ~ file: index.js ~ line 95 ~ userSendMsg ~ msg", msg);
   const text = msg.text;
 
   switch (text) {
