@@ -40,7 +40,6 @@ setInterval(async () => {
       // Replace Telegram alias to Twitter direct links in order to aviod scams
       const mentions = text.matchAll(/\@(\w+)/g);
       for (const mention of mentions) {
-        console.log("MENTION", mention[0]);
         text = text.replace(mention[0], `<a href="https://twitter.com/${mention[1]}">${mention[0]}</a>`);
       }
       // If the tweet does contain a link, show preview. Else, do not show it since it will load the message text from the tweet url
@@ -53,7 +52,7 @@ setInterval(async () => {
   }
 }, 5 * 60 * 1000); // Checks every 10 minutes ---
 
-bot.launch();
+// bot.launch();
 exports.handler = async (event) => {
   try {
     await userSendMsg(event.body);

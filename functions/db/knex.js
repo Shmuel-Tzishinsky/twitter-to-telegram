@@ -1,7 +1,7 @@
 const knex = require("knex");
 const sqlite3 = require("sqlite3");
 const path = require("path");
-console.log(">>>>>>>>>>>>>>>>>", path.join(__dirname, "/functions/subscriptions.sqlite3"));
+console.log(">>>>>>>>>>>>>>>>>", path.join(__dirname, "../../", "/functions/subscriptions.sqlite3"));
 const connectedKnex = knex({
   client: "sqlite3",
   connection: {
