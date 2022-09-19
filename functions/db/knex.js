@@ -5,6 +5,7 @@ const connectedKnex = knex({
   connection: {
     filename: "subscriptions.sqlite3",
   },
+  useNullAsDefault: true,
 });
 
 module.exports = connectedKnex;
