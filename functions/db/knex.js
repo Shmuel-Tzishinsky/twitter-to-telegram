@@ -3,7 +3,7 @@ const sqlite3 = require("sqlite3");
 const connectedKnex = knex({
   client: "sqlite3",
   connection: {
-    filename: "subscriptions.sqlite3",
+    filename: "functions/subscriptions.sqlite3",
   },
   useNullAsDefault: true,
 });
