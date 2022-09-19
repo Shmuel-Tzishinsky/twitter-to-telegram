@@ -1,13 +1,19 @@
-const TelegramBot = require("node-telegram-bot-api");
+const { Telegraf } = require("telegraf");
+
+// bot.on("text", userSendMsg);
+// bot.on("forward_date", userSendMsg);
+
+// bot.launch();
+
 require("dotenv").config();
 const twitter = require("./twitter");
 const { getAllSubscription, updateSubscription } = require("./db/subscriptions");
 const { userSendMsg, sendMessage } = require("./actions");
 
-const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
+const bot = new Telegraf(process.env.TELEGRAM_TOKEN, { polling: true });
 
 // General commands
-bot.on("message", userSendMsg);
+bot.on("text", userSendMsg);
 
 // Cron;
 setInterval(async () => {
@@ -47,6 +53,7 @@ setInterval(async () => {
   }
 }, 5 * 60 * 1000); // Checks every 10 minutes ---
 
+// bot.launch();
 exports.handler = async (event) => {
   try {
     await userSendMsg(event.body);

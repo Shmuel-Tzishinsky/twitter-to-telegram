@@ -93,21 +93,20 @@ const userIsAdmin = async (userId) => {
 
 const userSendMsg = async (msg) => {
   const { message } = JSON.parse(msg + "");
+  // const text = message?.message?.text || message?.message?.caption;
 
   const text = message?.text || message?.caption;
 
-  switch (text) {
-    case text.match(/\/start/)?.input:
-      return await start(message);
-    case text.match(/\/subscriptions/)?.input:
-      return await subscriptions(message);
-    case text.match(/\/subscribe @(\w+)/)?.input:
-      return await subscribe(message, text.replace("/subscribe @", ""));
-    case text.match(/\/unsubscribe @(\w+)/)?.input:
-      return await unsubscribe(message, text.replace("/unsubscribe @", ""));
-
-    default:
-      return await sendMessage(message.chat.id, "I don't find command", "HTML");
+  if (text.match(/\/start/)?.input) {
+    return await start(message);
+  } else if (text.match(/\/subscriptions/)?.input) {
+    return await subscriptions(message);
+  } else if (text.match(/\/subscribe @(\w+)/)?.input) {
+    return await subscribe(message, text.replace("/subscribe @", ""));
+  } else if (text.match(/\/unsubscribe @(\w+)/)?.input) {
+    return await unsubscribe(message, text.replace("/unsubscribe @", ""));
+  } else {
+    return await sendMessage(message.chat.id, "I don't find command", "HTML");
   }
 };
 module.exports = {
