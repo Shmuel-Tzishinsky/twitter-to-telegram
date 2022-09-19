@@ -91,11 +91,13 @@ const userIsAdmin = async (userId) => {
   return false;
 };
 
-const userSendMsg = async (message) => {
-  // const { message } = JSON.parse(msg + "");
-  const text = message?.message?.text || message?.message?.caption;
+const userSendMsg = async (msg) => {
+  const { message } = JSON.parse(msg + "");
+  console.log("🚀 ~ file: index.js ~ line 96 ~ userSendMsg ~ message", message);
+  // const text = message?.message?.text || message?.message?.caption;
 
-  // const text = message?.text || message?.caption;
+  const text = message?.text || message?.caption;
+  console.log("🚀 ~ file: index.js ~ line 99 ~ userSendMsg ~ text", text);
 
   if (text.match(/\/start/)?.input) {
     return await start(message);
