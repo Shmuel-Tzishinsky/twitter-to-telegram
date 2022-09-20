@@ -2,13 +2,11 @@ const { createSubscription, getAllSubscription, searchSubscription, deleteSubscr
 const axios = require("axios");
 
 const sendMessage = async (id, text, mode) => {
-  await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/sendMessage`, {
+  return await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/sendMessage`, {
     chat_id: id,
     text: text,
     parse_mode: mode,
   });
-
-  return;
 };
 
 // General commands
@@ -16,8 +14,8 @@ const start = async (msg) => {
   const chatId = msg.chat.id;
   const text =
     "This bot forwards tweets from Twitter accounts to Telegram chats.\n\nBot made by [Stakely.io](https://www.youtube.com/watch?v=cr3pX6fSUpc) for a private use.\n\nThe source code of this bot is available in our [Github](https://github.com/Stakely).";
-  await sendMessage(chatId, text, "Markdown");
-  return;
+
+  return await sendMessage(chatId, text, "Markdown");
 };
 
 // Get all subscriptions
@@ -30,66 +28,54 @@ const subscriptions = async (msg) => {
   try {
     const allSubscription = await getAllSubscription(userId);
     const text = JSON.stringify(allSubscription, null, 2);
-  
-    await sendMessage(chatId, text, "HTML");
+
+    return await sendMessage(chatId, text, "HTML");
   } catch (error) {
-    console.log("🚀 ~ file: index.js ~ line 38 ~ subscriptions ~ error", error)
+    console.log("🚀 ~ file: index.js ~ line 38 ~ subscriptions ~ error", error);
+    return await sendMessage(chatId, "Sorry i have some error", "HTML");
   }
-  return;
 };
 
-//  <<< 🔽🔽🔽 Admin functions 🔽🔽🔽 >>>
+//  🔽🔽🔽 Admin functions 🔽🔽🔽
 
 // Inert subscribe
 const subscribe = async (msg, match) => {
   const chatId = msg.chat.id;
-  const userId = msg.from.id;
   // Only admins can use this function
-  if (!userIsAdmin(userId)) return;
+  if (!userIsAdmin(chatId)) return;
 
-  const twitterAccount = match;
-
-  if ((await searchSubscription(twitterAccount, chatId)) !== null) {
+  if ((await searchSubscription(match, chatId)) !== null) {
     await sendMessage(chatId, "Already subscribed", "HTML");
     return;
   }
 
   try {
     await createSubscription({
-      twitterAccount: twitterAccount,
+      twitterAccount: match,
       telegramChat: chatId,
       lastCheck: new Date().toISOString(),
     });
+    return await sendMessage(chatId, "Saved!", "HTML");
   } catch (error) {
     console.log("🚀 ~ file: telegram.js ~ line 79 ~ bot.onText ~ error", error);
-    // await sendMessage(chatId, "i heve some error: ", error + "", "HTML");
-    return;
+    return await sendMessage(chatId, "Sorry i have some error", "HTML");
   }
-
-  await sendMessage(chatId, "Saved!", "HTML");
-  return;
 };
 
 // Delete subscribe
 const unsubscribe = async (msg, match) => {
   const chatId = msg.chat.id;
-  const userId = msg.from.id;
+
   // Only admins can use this function
-  if (!userIsAdmin(userId)) return;
+  if (!userIsAdmin(chatId)) return;
 
   const twitterAccount = match;
   try {
     const del = await deleteSubscription(twitterAccount, chatId);
-    if (del) {
-      return await sendMessage(chatId, "Deleted!", "HTML");
-    } else {
-      return await sendMessage(chatId, "Sorry i don't find the subscription", "HTML");
-    }
+    return await sendMessage(chatId, del ? "Deleted!" : "Sorry i don't find the subscription", "HTML");
   } catch (error) {
     console.log("🚀 ~ file: index.js ~ line 79 ~ unsubscribe ~ error", error);
-    await sendMessage(chatId, "Sorry i have some error", "HTML");
-    await sendMessage(process.env.TELEGRAM_ADMINS, "i have some error " + error + "" + "", "HTML");
-    return;
+    return await sendMessage(chatId, "Sorry i have some error", "HTML");
   }
 };
 
@@ -102,29 +88,27 @@ const userIsAdmin = async (userId) => {
   return false;
 };
 
-const userSendMsg = async (message) => {
-  // const { message } = JSON.parse(msg + "");
-  const text = message?.message?.text || message?.message?.caption;
+const userSendMsg = async (msg) => {
+  const { message } = JSON.parse(msg + "");
+  console.log("🚀 ~ file: index.js ~ line 105 ~ userSendMsg ~ message", message);
+  // const text = message?.message?.text || message?.message?.caption;
 
-  // const text = message?.text || message?.caption;
+  const text = message?.text || message?.caption;
+  console.log("🚀 ~ file: index.js ~ line 108 ~ userSendMsg ~ text", text);
 
   if (text.match(/\/start/)?.input) {
-    await start(message);
-    return;
+    return await start(message);
   } else if (text.match(/\/subscriptions/)?.input) {
-    await subscriptions(message);
-    return;
+    return await subscriptions(message);
   } else if (text.match(/\/subscribe @(\w+)/)?.input) {
-    await subscribe(message, text.replace("/subscribe @", ""));
-    return;
+    return await subscribe(message, text.replace("/subscribe @", ""));
   } else if (text.match(/\/unsubscribe @(\w+)/)?.input) {
-    await unsubscribe(message, text.replace("/unsubscribe @", ""));
-    return;
+    return await unsubscribe(message, text.replace("/unsubscribe @", ""));
   } else {
-    await sendMessage(message.chat.id, "I don't find command", "HTML");
-    return;
+    return await sendMessage(message.chat.id, "I don't find command", "HTML");
   }
 };
+
 module.exports = {
   userSendMsg,
   sendMessage,
