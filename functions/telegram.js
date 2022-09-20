@@ -1,6 +1,8 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 const connectMongoDB = require("./db/mongoConn");
+const translate = require("translate-google");
+
 connectMongoDB();
 
 const { Telegraf } = require("telegraf");
@@ -15,10 +17,8 @@ mongoose.connection.once("open", () => {
   console.log("MongoDB Connected!");
 });
 
-// bot.launch();
-
 // General commands
-// bot.on("text", userSendMsg);
+bot.on("text", userSendMsg);
 
 // Cron;
 setInterval(async () => {
@@ -43,6 +43,9 @@ setInterval(async () => {
           tweet.id +
           '">TWEET URL</a>';
 
+        const textHe = await translate(tweet.text, { to: "iw" });
+        text += `\n\n ☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰☰\n\n ${textHe}`;
+
         // Replace Telegram alias to Twitter direct links in order to aviod scams
         const mentions = text.matchAll(/\@(\w+)/g);
         for (const mention of mentions) {
@@ -60,8 +63,8 @@ setInterval(async () => {
     console.log("🚀 ~ file: telegram.js ~ line 58 ~ setInterval ~ error", error);
   }
 }, 5 * 60 * 1000); // Checks every 10 minutes ---
-
-// bot.launch();
+//
+bot.launch();
 exports.handler = async (event) => {
   try {
     await userSendMsg(event.body);
