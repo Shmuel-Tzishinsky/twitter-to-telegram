@@ -1,5 +1,4 @@
 const { createSubscription, getAllSubscription, searchSubscription, deleteSubscription } = require("../db/subscriptions");
-
 const axios = require("axios");
 
 const sendMessage = async (id, text, mode) => {
@@ -28,10 +27,14 @@ const subscriptions = async (msg) => {
   // Only admins can use this function
   if (!userIsAdmin(userId)) return;
 
-  const allSubscription = await getAllSubscription({ telegram_chat: userId });
-  const text = JSON.stringify(allSubscription, null, 2);
-
-  await sendMessage(chatId, text, "HTML");
+  try {
+    const allSubscription = await getAllSubscription(userId);
+    const text = JSON.stringify(allSubscription, null, 2);
+  
+    await sendMessage(chatId, text, "HTML");
+  } catch (error) {
+    console.log("🚀 ~ file: index.js ~ line 38 ~ subscriptions ~ error", error)
+  }
   return;
 };
 
@@ -46,20 +49,20 @@ const subscribe = async (msg, match) => {
 
   const twitterAccount = match;
 
-  if (await searchSubscription(twitterAccount, chatId)) {
+  if ((await searchSubscription(twitterAccount, chatId)) !== null) {
     await sendMessage(chatId, "Already subscribed", "HTML");
     return;
   }
 
   try {
     await createSubscription({
-      twitter_account: twitterAccount,
-      telegram_chat: chatId,
-      last_check: new Date().toISOString(),
+      twitterAccount: twitterAccount,
+      telegramChat: chatId,
+      lastCheck: new Date().toISOString(),
     });
   } catch (error) {
     console.log("🚀 ~ file: telegram.js ~ line 79 ~ bot.onText ~ error", error);
-    await sendMessage(chatId, "i heve some error: ", error + "", "HTML");
+    // await sendMessage(chatId, "i heve some error: ", error + "", "HTML");
     return;
   }
 
@@ -99,11 +102,11 @@ const userIsAdmin = async (userId) => {
   return false;
 };
 
-const userSendMsg = async (msg) => {
-  const { message } = JSON.parse(msg + "");
-  // const text = message?.message?.text || message?.message?.caption;
+const userSendMsg = async (message) => {
+  // const { message } = JSON.parse(msg + "");
+  const text = message?.message?.text || message?.message?.caption;
 
-  const text = message?.text || message?.caption;
+  // const text = message?.text || message?.caption;
 
   if (text.match(/\/start/)?.input) {
     await start(message);

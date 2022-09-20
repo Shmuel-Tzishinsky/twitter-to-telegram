@@ -1,26 +1,31 @@
-const knex = require("./knex");
+const SchemaSub = require("../models/SchemaSub");
 
-const createSubscription = (sub) => {
-  return knex("subscriptions").insert(sub);
+const getAllSubscription = async (telegram_chat) => {
+  return await SchemaSub.find({ telegramChat: telegram_chat });
 };
 
-const getAllSubscription = (telegram_chat) => {
-  return knex("subscriptions").where(telegram_chat).select("*");
-};
-
-// Update subscription last check time
-const updateSubscription = async (last_time, subscription_id) => {
-  return await knex("subscriptions").update("last_check", last_time).where("subscription_id", subscription_id);
+const createSubscription = async (sub) => {
+  const addSub = new SchemaSub(sub);
+  return await addSub.save();
 };
 
 const searchSubscription = async (twitter_account, telegram_chat) => {
-  const subscription = await knex("subscriptions").where("twitter_account", twitter_account).andWhere("telegram_chat", telegram_chat);
-  return subscription.length === 0 ? !1 : !0;
+  return await SchemaSub.exists({
+    twitterAccount: twitter_account,
+    telegramChat: telegram_chat,
+  });
+};
+
+// Update subscription last check time
+const updateSubscription = async (id, last_time) => {
+  return await SchemaSub.updateOne({ _id: id }, { lastCheck: last_time });
 };
 
 const deleteSubscription = async (twitter_account, telegram_chat) => {
-  const subscription = await knex("subscriptions").where("twitter_account", twitter_account).andWhere("telegram_chat", telegram_chat).del();
-  return subscription;
+  return await SchemaSub.deleteMany({
+    twitterAccount: twitter_account,
+    telegramChat: telegram_chat,
+  });
 };
 
 module.exports = {
