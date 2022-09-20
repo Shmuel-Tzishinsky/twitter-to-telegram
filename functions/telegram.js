@@ -64,7 +64,7 @@ setInterval(async () => {
   }
 }, 1 * 60 * 1000); // Checks every 10 minutes ---
 //
-bot.launch();
+// bot.launch();
 exports.handler = async (event) => {
   try {
     await userSendMsg(event.body);
