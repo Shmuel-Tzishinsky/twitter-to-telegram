@@ -62,9 +62,9 @@ setInterval(async () => {
   } catch (error) {
     console.log("🚀 ~ file: telegram.js ~ line 58 ~ setInterval ~ error", error);
   }
-}, 5 * 60 * 1000); // Checks every 10 minutes ---
+}, 1 * 60 * 1000); // Checks every 10 minutes ---
 //
-// bot.launch();
+bot.launch();
 exports.handler = async (event) => {
   try {
     await userSendMsg(event.body);
