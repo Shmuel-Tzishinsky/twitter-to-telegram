@@ -18,7 +18,7 @@ mongoose.connection.once("open", () => {
 });
 
 // General commands
-bot.on("text", userSendMsg);
+// bot.on("text", userSendMsg);
 
 // Cron;
 setInterval(async () => {
@@ -64,7 +64,7 @@ setInterval(async () => {
   }
 }, 5 * 60 * 1000); // Checks every 10 minutes ---
 //
-bot.launch();
+// bot.launch();
 exports.handler = async (event) => {
   try {
     await userSendMsg(event.body);
