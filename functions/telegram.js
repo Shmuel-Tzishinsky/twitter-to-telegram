@@ -21,7 +21,7 @@ mongoose.connection.once("open", () => {
 // bot.launch();
 exports.handler = async (event) => {
   try {
-    const message = JSON.stringify(event.body + " ");
+    const message = JSON.parse(event.body + " ");
 
     if (message.text === "/stop") {
       clearInterval(intrevalChecksTweet);
