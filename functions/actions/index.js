@@ -1,5 +1,6 @@
 const { createSubscription, getAllSubscription, searchSubscription, deleteSubscription } = require("../db/subscriptions");
 const axios = require("axios");
+const { getDataUser, getAllFollowing } = require("../twitter");
 
 const sendMessage = async (id, text, mode) => {
   return await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/sendMessage`, {
@@ -21,12 +22,11 @@ const start = async (msg) => {
 // Get all subscriptions
 const subscriptions = async (msg) => {
   const chatId = msg.chat.id;
-  const userId = msg.from.id;
   // Only admins can use this function
-  if (!userIsAdmin(userId)) return;
+  if (!userIsAdmin(chatId)) return;
 
   try {
-    const allSubscription = await getAllSubscription(userId);
+    const allSubscription = await getAllSubscription(chatId);
     const text = JSON.stringify(allSubscription, null, 2);
 
     return await sendMessage(chatId, text, "HTML");
@@ -55,11 +55,30 @@ const subscribe = async (msg, match) => {
       telegramChat: chatId,
       lastCheck: new Date().toISOString(),
     });
-    return await sendMessage(chatId, "Saved!", "HTML");
+    return await sendMessage(chatId, `Saved the ${match}!`, "HTML");
   } catch (error) {
     console.log("🚀 ~ file: telegram.js ~ line 79 ~ bot.onText ~ error", error);
     return await sendMessage(chatId, "Sorry i have some error", "HTML");
   }
+};
+
+// Inert subscribe the all follower from @username
+const suballfollower = async (msg, match) => {
+  console.log("🚀 ~ file: index.js ~ line 67 ~ suballfollower ~ match", match);
+  const chatId = msg.chat.id;
+  // Only admins can use this function
+  if (!userIsAdmin(chatId)) return;
+
+  const findTheID = await getDataUser(match.split(" ")[1].replace("@", ""));
+  console.log("🚀 ~ file: index.js ~ line 73 ~ suballfollower ~ findTheID", findTheID.data.id);
+  const allFollowing = await getAllFollowing(findTheID.data.id);
+  console.log("🚀 ~ file: index.js ~ line 74 ~ suballfollower ~ allFollowing ", allFollowing);
+
+  for (let i = 0; i < allFollowing.data.length; i++) {
+    await subscribe(msg, allFollowing?.data[i]?.username);
+  }
+
+  return await sendMessage(chatId, "I finished the work, you can see the list of subscribers at /subscribers", "HTML");
 };
 
 // Delete subscribe
@@ -88,11 +107,11 @@ const userIsAdmin = async (userId) => {
   return false;
 };
 
-const userSendMsg = async (msg) => {
-  const { message } = JSON.parse(msg + "");
-  // const text = message?.message?.text || message?.message?.caption;
+const userSendMsg = async (message) => {
+  // const { message } = JSON.parse(msg + "");
+  const text = message?.message?.text || message?.message?.caption;
 
-  const text = message?.text || message?.caption;
+  // const text = message?.text || message?.caption;
 
   if (text.match(/\/start/)?.input) {
     return await start(message);
@@ -100,6 +119,8 @@ const userSendMsg = async (msg) => {
     return await subscriptions(message);
   } else if (text.match(/\/subscribe @(\w+)/)?.input) {
     return await subscribe(message, text.replace("/subscribe @", ""));
+  } else if (text.match(/\/suballfollower @(\w+)/)?.input) {
+    return await suballfollower(message, text.replace("/unsubscribe @", ""));
   } else if (text.match(/\/unsubscribe @(\w+)/)?.input) {
     return await unsubscribe(message, text.replace("/unsubscribe @", ""));
   } else {
