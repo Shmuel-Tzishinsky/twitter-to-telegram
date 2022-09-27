@@ -39,6 +39,8 @@ mongoose.connection.once("open", () => {
 // bot.launch();
 exports.handler = async (event) => {
   try {
+    const { message } = JSON.parse(event.body + "");
+
     console.log("🚀 ~ file: telegram.js ~ line 25 ~ exports.handler= ~ message", message);
     // const text = message?.message?.text || message?.message?.caption;
 
