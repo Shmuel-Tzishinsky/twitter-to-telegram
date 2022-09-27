@@ -45,9 +45,6 @@ exports.handler = async (event) => {
     if (message.text === "/stop") {
       clearInterval(intrevalChecksTweet);
       return await sendMessage(process.env.TELEGRAM_ADMINS, "I stop the msg", "HTML");
-    } else if (message.text === "/start") {
-      intrevalChecksTweet = setInterval(test, 1000);
-      return await sendMessage(process.env.TELEGRAM_ADMINS, "I start the msg", "HTML");
     }
     await userSendMsg(event.body);
     return { statusCode: 200, body: "" };
