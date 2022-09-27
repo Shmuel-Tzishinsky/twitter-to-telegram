@@ -10,9 +10,10 @@ const { userSendMsg, sendMessage } = require("./actions");
 const { checksTweet } = require("./actions/tweet");
 
 let intrevalChecksTweet;
-
+let i = 0;
 function test(e) {
   console.log("TEST");
+  sendMessage(process.env.TELEGRAM_ADMINS, "my intereval is " + i++ + "", "HTML");
 }
 mongoose.connection.once("open", () => {
   console.log("MongoDB Connected!");
