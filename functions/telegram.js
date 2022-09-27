@@ -41,16 +41,12 @@ exports.handler = async (event) => {
   try {
     const { message } = JSON.parse(event.body + "");
 
-    console.log("🚀 ~ file: telegram.js ~ line 25 ~ exports.handler= ~ message", message);
-    // const text = message?.message?.text || message?.message?.caption;
-
     if (message.text === "/stop") {
       clearInterval(intrevalChecksTweet);
-      await sendMessage(process.env.TELEGRAM_ADMINS, "I stop the msg", "HTML");
+      return await sendMessage(process.env.TELEGRAM_ADMINS, "I stop the msg", "HTML");
     } else if (message.text === "/start") {
       intrevalChecksTweet = setInterval(test, 1000);
-      await sendMessage(process.env.TELEGRAM_ADMINS, "I start the msg", "HTML");
-      return;
+      return await sendMessage(process.env.TELEGRAM_ADMINS, "I start the msg", "HTML");
     }
     await userSendMsg(event.body);
     return { statusCode: 200, body: "" };
