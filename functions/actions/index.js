@@ -108,10 +108,13 @@ const userIsAdmin = async (userId) => {
 };
 
 const userSendMsg = async (msg) => {
-  const { message } = JSON.parse(msg + "");
+  const { message } = JSON.parse(msg + " ");
   // const text = message?.message?.text || message?.message?.caption;
 
   const text = message?.text || message?.caption;
+  if (!text) {
+    return await sendMessage(process.env.TELEGRAM_ADMINS, "text is undefin " + message + "", "HTML");
+  }
 
   if (text.match(/\/start/)?.input) {
     return await start(message);
