@@ -10,15 +10,16 @@ const { userSendMsg, sendMessage } = require("./actions");
 const { checksTweet } = require("./actions/tweet");
 
 let intrevalChecksTweet;
-let i = 0;
+async function test(i) {
+  return await sendMessage(process.env.TELEGRAM_ADMINS, `server ${i}`, "HTML");
+}
 mongoose.connection.once("open", () => {
   console.log("MongoDB Connected!");
-
-  setInterval(() => {
-    console.log("TEST " + i++ + "");
-  }, 1500);
-  intrevalChecksTweet = setInterval(checksTweet, 5 * 60 * 1000); // Checks every 1 minutes ---
+  let i = 0;
+  intrevalChecksTweet = setInterval(() => test(i++), 1000); // Checks every 1 minutes ---
 });
+
+// 5 * 60 *
 
 // General commands
 // bot.on("text", userSendMsg);
