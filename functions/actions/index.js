@@ -2,15 +2,15 @@ const { start, subscriptions, suballfollower, unsubscribe } = require("./actions
 const { sendMessage, sendMediaGrup, sendAnimation } = require("./sendMsg");
 const { checksTweet } = require("./tweet");
 
-const userSendMsg = async (message) => {
-  // const { message } = JSON.parse(String(msg));
-  // const text = message?.text || message?.caption;
-  const text = message?.message?.text || message?.message?.caption;
+const userSendMsg = async (msg) => {
+  const { message } = JSON.parse(String(msg));
+  const text = message?.text || message?.caption;
+  console.log("🚀 ~ file: index.js ~ line 8 ~ userSendMsg ~ text", text);
+  // const text = message?.message?.text || message?.message?.caption;
 
   if (!text) {
     return await sendMessage(process.env.TELEGRAM_ADMINS, "text is undefin " + JSON.stringify(message, null, 1) + "", "HTML");
   }
-  console.log(text);
   if (text.match(/\/start/)?.input) {
     return await start(message);
   } else if (text.match(/\/subscriptions/)?.input) {
