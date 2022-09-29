@@ -6,19 +6,21 @@ connectMongoDB();
 const { Telegraf } = require("telegraf");
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN, { polling: true });
 
-const { userSendMsg, sendMessage } = require("./actions");
-const { checksTweet } = require("./actions/tweet");
+const { userSendMsg } = require("./actions");
+// const { checksTweet } = require("./actions/tweet");
 
-let intrevalChecksTweet;
+// let intrevalChecksTweet;
 mongoose.connection.once("open", () => {
   console.log("MongoDB Connected!");
-  intrevalChecksTweet = setInterval(checksTweet, 5 * 60 * 1000); // Checks every 1 minutes ---
+  // intrevalChecksTweet = setInterval(checksTweet, 15000); // Checks every 1 minutes ---
 });
 
-// General commands
-// bot.on("text", userSendMsg);
+// 5 * 60 *
 
-// bot.launch();
+// General commands
+bot.on("text", userSendMsg);
+
+bot.launch();
 exports.handler = async (event) => {
   try {
     await userSendMsg(event.body);

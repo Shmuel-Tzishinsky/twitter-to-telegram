@@ -1,8 +1,9 @@
 // const translate = require("google-translate-api");
-const { sendMessage } = require("./index");
+const { sendMessage, sendAnimation, sendMediaGrup } = require("./sendMsg");
 const { getAllSubscription, updateSubscription } = require("../db/subscriptions");
 const twitter = require("../twitter");
 const translate = require("@vitalets/google-translate-api");
+const { getMedia } = require("./getMedia");
 
 // Replace Telegram alias to Twitter direct links in order to aviod scams
 const twitterDirectToLink = async (text) => {
@@ -17,7 +18,7 @@ const twitterDirectToLink = async (text) => {
 const transleteTweet = async (tweet, text) => {
   try {
     const textHe = await translate(tweet.text, { to: "iw" });
-    text += `\n\n ☰☰☰☰☰☰ ציוץ מתורגם ☰☰☰☰☰☰\n\n${textHe.text}`;
+    text += `\n\n\n תרגום:\n${textHe.text}`;
 
     text = await twitterDirectToLink(text);
   } catch (error) {
@@ -27,22 +28,40 @@ const transleteTweet = async (tweet, text) => {
   return text;
 };
 
-const analyzeText = async (tweet, subscription) => {
-  let text = `<b>${subscription.twitterAccount}:</b>\n\n ${tweet.text}\n\n
-<a href="https://twitter.com/${subscription.twitterAccount}/status/${tweet.id}">קישור לציוץ</a>`;
-
-  text = await transleteTweet(tweet, text);
-
-  return text;
-};
-
 const analyzeTweet = async (tweets, subscription) => {
   for (const tweet of tweets) {
     // Do not forward replies
     if (tweet.in_reply_to_user_id) continue;
-    let text = await analyzeText(tweet, subscription);
+    // console.log("🚀 ~ file: tweet.js ~ line 43 ~ analyzeTweet ~ tweet", tweet);
+    const media = await getMedia(tweet.id);
+    // console.log("🚀 ~ file: tweet.js ~ line 37 ~ analyzeTweet ~ media", media);
+    let text = `<b>${subscription.twitterAccount}:</b>\n\n ${tweet.text}`;
 
-    await sendMessage(subscription.telegramChat, text, "html");
+    text = await transleteTweet(tweet, text);
+
+    text += `\n\n
+    <a href="https://twitter.com/${subscription.twitterAccount}/status/${tweet.id}">קישור לציוץ</a>`;
+
+    try {
+      if (media.media && media?.media[0]?.type === "animated_gif") {
+        return await sendAnimation(subscription.telegramChat, text, media.media[0]);
+      }
+      if (media.media) {
+        arrMedia = media.media.map((e) => {
+          return {
+            type: (e.content_type || e.type).replace("video/mp4", "video").replace("animated_gif", "gif"),
+            media: e.url,
+          };
+        });
+        const res = await sendMediaGrup(subscription.telegramChat, text, arrMedia);
+        res.data.result[0].message_id && (await sendMessage(subscription.telegramChat, text, "html", res.data.result[0].message_id));
+      } else {
+        await sendMessage(subscription.telegramChat, text, "html");
+      }
+    } catch (error) {
+      await sendMessage(subscription.telegramChat, text, "html");
+      console.log("🚀 ~ file: tweet.js ~ line 46 ~ analyzeTweet ~ error", error);
+    }
   }
 
   return !0;
@@ -62,13 +81,11 @@ const checksTweet = async () => {
   console.log("> Checking subscriptions...");
   try {
     const subscriptions = await getAllSubscription(process.env.TELEGRAM_ADMINS);
-    await analyzeData(subscriptions);
+    return await analyzeData(subscriptions);
   } catch (error) {
     console.log("🚀 ~ file: tweet.js ~ line 12 ~ checksTweet ~ error", error);
     return;
   }
 };
 
-module.exports = {
-  checksTweet,
-};
+module.exports = checksTweet;

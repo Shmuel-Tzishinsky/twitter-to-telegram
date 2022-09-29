@@ -17,7 +17,7 @@ const getTweets = async (account, fromDate) => {
   );
   // curl --request GET 'https://api.twitter.com/2/tweets?ids=1263145271946551300&expansions=attachments.media_keys&
   res = await res.json();
-  console.log(JSON.stringify(res, null, 1));
+  // console.log(JSON.stringify(res, null, 1));
 
   // Normalize empty response
   if (!res.data) return [];
@@ -39,7 +39,7 @@ const getMedia = async (ids) => {
 
     return includes?.media;
   } else if (includes?.media[0].type === "video" || includes?.media[0].type === "animated_gif") {
-    console.log("Views:\t\t" + includes?.media[0].public_metrics?.view_count);
+    // console.log("Views:\t\t" + includes?.media[0].public_metrics?.view_count);
     const urls = includes?.media[0]?.variants?.filter((vi) => vi.content_type === "video/mp4");
     console.table(urls, ["bit_rate", "url"]);
     return urls;
@@ -55,7 +55,7 @@ const getMedia = async (ids) => {
 };
 
 const getDataUser = async (userName) => {
-  console.log("🚀 ~ file: twitter.js ~ line 58 ~ getDataUser ~ userName", userName);
+  // console.log("🚀 ~ file: twitter.js ~ line 58 ~ getDataUser ~ userName", userName);
   try {
     let res = await fetch(`https://api.twitter.com/2/users/by/username/${userName}`, {
       headers: {
@@ -70,7 +70,7 @@ const getDataUser = async (userName) => {
 };
 
 const getAllFollowing = async (userID) => {
-  console.log("🚀 ~ file: twitter.js ~ line 58 ~ getDataUser ~ userName", userID);
+  // console.log("🚀 ~ file: twitter.js ~ line 58 ~ getDataUser ~ userName", userID);
   try {
     let res = await fetch(`https://api.twitter.com/2/users/${userID}/following`, {
       headers: {
