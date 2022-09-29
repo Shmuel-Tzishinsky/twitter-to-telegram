@@ -21,7 +21,28 @@ const subscriptions = async (msg) => {
     const allSubscription = await getAllSubscription(chatId);
     const text = JSON.stringify(allSubscription, null, 2);
 
-    return await sendMessage(chatId, text, "HTML");
+    if (text.length >= 4096) {
+      const max_size = 4096;
+
+      let amount_sliced = text.length / max_size;
+      let start = 0;
+      let end = max_size;
+      let messages;
+      let messagesArray = [];
+      for (let i = 0; i < amount_sliced; i++) {
+        messages = text.slice(start, end);
+        messagesArray.push(messages);
+        start = start + max_size;
+        end = end + max_size;
+      }
+
+      for (let i = 0; i < messagesArray.length; i++) {
+        await sendMessage(chatId, messagesArray[i], "HTML");
+      }
+    } else {
+      await sendMessage(chatId, text, "HTML");
+    }
+    return;
   } catch (error) {
     console.log("🚀 ~ file: index.js ~ line 38 ~ subscriptions ~ error", error);
     return await sendMessage(chatId, "Sorry i have some error", "HTML");

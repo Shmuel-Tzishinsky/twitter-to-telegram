@@ -15,20 +15,16 @@ const sendMessage = async (id, text, mode, replayMsgId) => {
     parse_mode: mode,
   });
 };
-const sendMediaGrup = async (id, text, media) =>
+const sendMediaGrup = async (id, media) =>
   await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/sendMediaGroup`, {
     chat_id: id,
-    caption: "text yyyyyyyyyyyyyyyyyyyyyyyyyyy",
     media: media,
     parse_mode: "HTML",
   });
 
-const sendAnimation = async (id, text, media) =>
+const sendAnimation = async (id, media) =>
   await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/sendAnimation`, {
     chat_id: id,
-    caption: text,
-    text: text,
-    title: text,
     animation: media,
     parse_mode: "HTML",
   });

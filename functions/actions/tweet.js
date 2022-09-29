@@ -44,7 +44,7 @@ const analyzeTweet = async (tweets, subscription) => {
 
     try {
       if (media.media && media?.media[0]?.type === "animated_gif") {
-        return await sendAnimation(subscription.telegramChat, text, media.media[0]);
+        return await sendAnimation(subscription.telegramChat, media.media[0]);
       }
       if (media.media) {
         arrMedia = media.media.map((e) => {
@@ -53,7 +53,7 @@ const analyzeTweet = async (tweets, subscription) => {
             media: e.url,
           };
         });
-        const res = await sendMediaGrup(subscription.telegramChat, text, arrMedia);
+        const res = await sendMediaGrup(subscription.telegramChat, arrMedia);
         res.data.result[0].message_id && (await sendMessage(subscription.telegramChat, text, "html", res.data.result[0].message_id));
       } else {
         await sendMessage(subscription.telegramChat, text, "html");
@@ -88,4 +88,6 @@ const checksTweet = async () => {
   }
 };
 
-module.exports = checksTweet;
+module.exports = {
+  checksTweet: checksTweet,
+};

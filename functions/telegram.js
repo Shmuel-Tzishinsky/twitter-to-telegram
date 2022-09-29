@@ -18,9 +18,9 @@ mongoose.connection.once("open", () => {
 // 5 * 60 *
 
 // General commands
-bot.on("text", userSendMsg);
+// bot.on("text", userSendMsg);
 
-bot.launch();
+// bot.launch();
 exports.handler = async (event) => {
   try {
     await userSendMsg(event.body);
