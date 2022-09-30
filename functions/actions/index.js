@@ -20,7 +20,7 @@ const userSendMsg = async (msg) => {
     return await suballfollower(message, text.replace("/unsubscribe @", ""));
   } else if (text.match(/\/unsubscribe @(\w+)/)?.input) {
     return await unsubscribe(message, text.replace("/unsubscribe @", ""));
-  } else if (text === "/getTweets") {
+  } else if (text === "/gettweets") {
     return await checksTweet();
   } else {
     return await sendMessage(message.chat.id, "I don't find command", "HTML");
