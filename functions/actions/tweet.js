@@ -79,7 +79,9 @@ const analyzeData = async (subscriptions) => {
 
 const checksTweet = async () => {
   console.log("> Checking subscriptions...");
+
   try {
+    await sendMessage(process.env.TELEGRAM_ADMINS, "> Checking subscriptions...", "HTML");
     const subscriptions = await getAllSubscription(process.env.TELEGRAM_ADMINS);
     return await analyzeData(subscriptions);
   } catch (error) {
