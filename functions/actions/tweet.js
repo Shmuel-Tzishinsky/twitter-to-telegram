@@ -32,21 +32,15 @@ const analyzeTweet = async (tweets, subscription) => {
   for (const tweet of tweets) {
     // Do not forward replies
     if (tweet.in_reply_to_user_id) continue;
-    // console.log("🚀 ~ file: tweet.js ~ line 43 ~ analyzeTweet ~ tweet", tweet);
     const media = await getMedia(tweet.id);
-    // console.log("🚀 ~ file: tweet.js ~ line 37 ~ analyzeTweet ~ media", media);
-    let text = `<b>${subscription.twitterAccount}:</b>\n\n ${tweet.text}`;
-
-    text = await transleteTweet(tweet, text);
-
-    text += `\n\n
-    <a href="https://twitter.com/${subscription.twitterAccount}/status/${tweet.id}">קישור לציוץ</a>`;
+    let text = await transleteTweet(tweet, `<b>${subscription.twitterAccount}:</b>\n\n ${tweet.text}`);
+    text += `\n\n<a href="https://twitter.com/${subscription.twitterAccount}/status/${tweet.id}">קישור לציוץ</a>`;
 
     try {
-      if (media.media && media?.media[0]?.type === "animated_gif") {
-        return await sendAnimation(subscription.telegramChat, media.media[0]);
-      }
       if (media.media) {
+        if (media?.media[0]?.type === "animated_gif") {
+          return await sendAnimation(subscription.telegramChat, media.media[0]);
+        }
         arrMedia = media.media.map((e) => {
           return {
             type: (e.content_type || e.type).replace("video/mp4", "video").replace("animated_gif", "gif"),
@@ -91,5 +85,5 @@ const checksTweet = async () => {
 };
 
 module.exports = {
-  checksTweet: checksTweet,
+  checksTweet,
 };

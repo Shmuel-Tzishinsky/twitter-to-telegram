@@ -2,7 +2,6 @@ const axios = require("axios");
 
 const sendMessage = async (id, text, mode, replayMsgId) => {
   if (replayMsgId) {
-    console.log(1111111111);
     return await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/sendMessage`, {
       chat_id: id,
       text: text,
