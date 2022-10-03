@@ -1,11 +1,12 @@
+const { plugin } = require("mongoose");
 const { start, subscriptions, suballfollower, unsubscribe } = require("./actions");
 const { sendMessage, sendMediaGrup, sendAnimation } = require("./sendMsg");
 const { checksTweet } = require("./tweet");
 
-const userSendMsg = async (msg) => {
-  const { message } = JSON.parse(String(msg));
-  const text = message?.text || message?.caption;
-  // const text = message?.message?.text || message?.message?.caption;
+const userSendMsg = async (message) => {
+  // const { message } = JSON.parse(String(msg));
+  // const text = message?.text || message?.caption;
+  const text = message?.message?.text || message?.message?.caption;
 
   if (!text) {
     return await sendMessage(process.env.TELEGRAM_ADMINS, "text is undefin " + JSON.stringify(message, null, 1) + "", "HTML");
@@ -21,6 +22,7 @@ const userSendMsg = async (msg) => {
   } else if (text.match(/\/unsubscribe @(\w+)/)?.input) {
     return await unsubscribe(message, text.replace("/unsubscribe @", ""));
   } else if (text === "/gettweets") {
+    console.log("get");
     return await checksTweet();
   } else {
     return await sendMessage(message.chat.id, "I don't find command", "HTML");

@@ -15,10 +15,10 @@ const twitterDirectToLink = async (text) => {
   return text;
 };
 
-const transleteTweet = async (tweet, text) => {
+const transleteTweet = async (text) => {
   try {
-    const textHe = await translate(tweet.text, { to: "iw" });
-    text += `\n\n\n תרגום:\n${textHe.text}`;
+    const textHe = await translate(text, { to: "iw" });
+    text += `\n\n\nתרגום:\n${textHe.text}`;
 
     text = await twitterDirectToLink(text);
   } catch (error) {
@@ -33,7 +33,9 @@ const analyzeTweet = async (tweets, subscription) => {
     // Do not forward replies
     if (tweet.in_reply_to_user_id) continue;
     const media = await getMedia(tweet.id);
-    let text = await transleteTweet(tweet, `<b>${subscription.twitterAccount}:</b>\n\n ${tweet.text}`);
+    let text = await transleteTweet(
+      `<b>${subscription.twitterAccount}:</b>\n\n ${tweet.text.replace(/https:(\/\/t\.co\/([A-Za-z0-9]|[A-Za-z]){10})/, "")}`
+    );
     text += `\n\n<a href="https://twitter.com/${subscription.twitterAccount}/status/${tweet.id}">קישור לציוץ</a>`;
 
     try {
@@ -55,16 +57,17 @@ const analyzeTweet = async (tweets, subscription) => {
     } catch (error) {
       await sendMessage(subscription.telegramChat, text, "html");
       console.log("🚀 ~ file: tweet.js ~ line 46 ~ analyzeTweet ~ error", error);
+      return;
     }
   }
-
-  return !0;
+  return;
 };
 
 const analyzeData = async (subscriptions) => {
   for (const subscription of subscriptions) {
     // Get tweets by account since the last check
     const tweets = await twitter.getTweets(subscription.twitterAccount, subscription.lastCheck);
+
     await analyzeTweet(tweets, subscription);
     // Update subscription last check time
     await updateSubscription(subscription._id, new Date().toISOString());
